@@ -1463,9 +1463,11 @@
 			if (!plugin.curInst) {
 				return;
 			}
-			var elem = $(event.target);
-			if (elem.closest('.' + plugin._popupClass + ',.' + plugin._triggerClass).length === 0 &&
-					!elem.hasClass(plugin._getMarker())) {
+			var elem = $(event.target.correspondingElement ? event.target.correspondingElement : event.target);
+
+			if (elem[0].nodeName !== 'path' &&
+				elem.closest('.' + plugin._popupClass + ',.' + plugin._triggerClass).length ===	0 &&
+				!elem.hasClass(plugin._getMarker())) {
 				plugin.hide(plugin.curInst);
 			}
 		},
