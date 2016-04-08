@@ -910,7 +910,7 @@
  $.datepick.newDate(2014, 12, 25) */
 		newDate: function(year, month, day) {
 			return (!year ? null : (year.getFullYear ? this._normaliseDate(new Date(year.getTime())) :
-				new Date(year, month - 1, day, 12)));
+				new Date(year, month - 1, day, 0)));
 		},
 
 		/** Standardise a date into a common format - time portion is 12 noon.
@@ -919,7 +919,7 @@
 			@return {Date} The normalised date. */
 		_normaliseDate: function(date) {
 			if (date) {
-				date.setHours(12, 0, 0, 0);
+				date.setHours(0, 0, 0, 0);
 			}
 			return date;
 		},
