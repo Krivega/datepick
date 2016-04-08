@@ -4,7 +4,10 @@
 	 Licensed under the MIT (http://keith-wood.name/licence.html) licence. 
 	 Please attribute the author if you use it. */
 
-(function($) { // Hide scope, no $ conflict
+(function(factory) {
+    require('plugins/jquery.plugin');
+    factory(require('jquery')); // jshint ignore:line
+  }(function($) {
 
 	var pluginName = 'datepick';
 
@@ -1075,14 +1078,24 @@
 				inst.trigger.remove();
 			}
 			var trigger = inst.options.showTrigger;
-			inst.trigger = (!trigger ? $([]) :
-				$(trigger).clone().removeAttr('id').addClass(this._triggerClass)
-					[inst.options.isRTL ? 'insertBefore' : 'insertAfter'](elem).
-					click(function() {
-						if (!plugin.isDisabled(elem[0])) {
-							plugin[plugin.curInst === inst ? 'hide' : 'show'](elem[0]);
-						}
-					}));
+
+			var $trigger;
+			if (!trigger) {
+					$trigger = $([]);
+			} else {
+					if (!trigger.jquery) {
+							$trigger = $(trigger).clone().removeAttr('id');
+					} else {
+							$trigger = trigger;
+					}
+					$trigger.addClass(this._triggerClass)[
+							inst.options.isRTL ? 'insertBefore' : 'insertAfter'](elem).click(function(e) {
+							if (!plugin.isDisabled(elem[0])) {
+									plugin[plugin.curInst === inst ? 'hide' : 'show'](elem[0]);
+							}
+					});
+			}
+			inst.trigger = $trigger;
 			this._autoSize(elem, inst);
 			var dates = this._extractDates(inst, elem.val());
 			if (dates) {
@@ -2017,11 +2030,13 @@
 			}
 			// Resize
 			$('body').append(picker);
-			var width = 0;
-			picker.find(inst.options.renderer.monthSelector).each(function() {
-				width += $(this).outerWidth();
-			});
-			picker.width(width / monthsToShow[0]);
+			if (!inst.options.integral) {
+				var width = 0;
+				picker.find(inst.options.renderer.monthSelector).each(function() {
+					width += $(this).outerWidth();
+				});
+				picker.width(width / monthsToShow[0]);
+			}
 			// Pre-show customisation
 			if ($.isFunction(inst.options.onShow)) {
 				inst.options.onShow.apply(elem, [picker, inst]);
@@ -2260,4 +2275,4 @@
 			on('resize.' + pluginName, function() { plugin.hide(plugin.curInst); });
 	});
 
-})(jQuery);
+}));
