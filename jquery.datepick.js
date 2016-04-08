@@ -1,8 +1,8 @@
 ﻿/* http://keith-wood.name/datepick.html
-   Date picker for jQuery v5.0.1.
-   Written by Keith Wood (kbwood{at}iinet.com.au) February 2010.
-   Licensed under the MIT (http://keith-wood.name/licence.html) licence. 
-   Please attribute the author if you use it. */
+	 Date picker for jQuery v5.0.1.
+	 Written by Keith Wood (kbwood{at}iinet.com.au) February 2010.
+	 Licensed under the MIT (http://keith-wood.name/licence.html) licence. 
+	 Please attribute the author if you use it. */
 
 (function($) { // Hide scope, no $ conflict
 
@@ -16,7 +16,7 @@
 		<pre>&lt;input type="text"> or &lt;div>&lt;/div></pre>
 		<p>Provide inline configuration like:</p>
 		<pre>&lt;input type="text" data-datepick="name: 'value'"/></pre>
-	 	@module Datepick
+		@module Datepick
 		@augments JQPlugin
 		@example $(selector).datepick()
  $(selector).datepick({minDate: 0, maxDate: '+1m +1w'}) */
@@ -307,7 +307,7 @@
 			@callback DatepickOnSelect
 			@param dates {Date[]} The selected date(s).
 			@example onSelect: function(dates) {
- 	alert('Selected ' + dates);
+	alert('Selected ' + dates);
  } */
 			
 		/** Datepicker on close callback.
@@ -315,7 +315,7 @@
 			@callback DatepickOnClose
 			@param dates {Date[]} The selected date(s).
 			@example onClose: function(dates) {
- 	alert('Selected ' + dates);
+	alert('Selected ' + dates);
  } */
 			
 		/** Default settings for the plugin.
@@ -375,6 +375,7 @@
 			showOptions: {},
 			showSpeed: 'normal',
 			popupContainer: null,
+			integral: false,
 			alignment: 'bottom',
 			fixedWeeks: false,
 			firstDay: 0,
@@ -1240,8 +1241,10 @@
 				// Generate content
 				plugin._update(elem[0], true);
 				// Adjust position before showing
-				var offset = plugin._checkOffset(inst);
-				inst.div.css({left: offset.left, top: offset.top});
+				if (!inst.options.integral) {
+					var offset = plugin._checkOffset(inst);
+					inst.div.css({left: offset.left, top: offset.top});
+				}
 				// And display
 				var showAnim = inst.options.showAnim;
 				var showSpeed = inst.options.showSpeed;
@@ -1326,10 +1329,16 @@
 				}
 				else if (plugin.curInst === inst) {
 					if (!inst.div) {
-						inst.div = $('<div></div>').addClass(this._popupClass).
-							css({display: (hidden ? 'none' : 'static'), position: 'absolute',
-								left: elem.offset().left, top: elem.offset().top + elem.outerHeight()}).
-							appendTo($(inst.options.popupContainer || 'body'));
+						var $el = inst.div = $('<div></div>').addClass(this._popupClass).
+							css({display: (hidden ? 'none' : 'static')});
+						if (!inst.options.integral) {
+							$el.css({
+								position: 'absolute',
+								left: elem.offset().left,
+								top: elem.offset().top + elem.outerHeight()
+							});
+						}
+						$el.appendTo($(inst.options.popupContainer || 'body'));
 						if ($.fn.mousewheel) {
 							inst.div.mousewheel(this._doMouseWheel);
 						}
@@ -1784,13 +1793,13 @@
 			@example $(selector).datepick('showMonth', 2014, 12, 25) */
 		showMonth: function(elem, year, month, day) {
 			var inst = this._getInst(elem);
-			if (!$.isEmptyObject(inst) && (day != null ||
+			if (!$.isEmptyObject(inst) && (!!day ||
 					(inst.drawDate.getFullYear() !== year || inst.drawDate.getMonth() + 1 !== month))) {
 				inst.prevDate = plugin.newDate(inst.drawDate);
-				var show = this._checkMinMax((year != null ?
+				var show = this._checkMinMax((!!year ?
 					plugin.newDate(year, month, 1) : plugin.today()), inst);
 				inst.drawDate = plugin.newDate(show.getFullYear(), show.getMonth() + 1, 
-					(day != null ? day : Math.min(inst.drawDate.getDate(),
+					(!!day ? day : Math.min(inst.drawDate.getDate(),
 					plugin.daysInMonth(show.getFullYear(), show.getMonth() + 1))));
 				this._update(elem);
 			}
