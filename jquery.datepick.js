@@ -2108,7 +2108,6 @@
 								break;
 							}
 						}
-						console.log('inst.highlightedSetDates ' , inst.highlightedSetDates);
 						if (inst.highlightedSetDates) {
 							if (drawDate.getTime() >= inst.highlightedSetDates.startDate.getTime() &&
 								drawDate.getTime() <= inst.highlightedSetDates.endDate.getTime()) {
