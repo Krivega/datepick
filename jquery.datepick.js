@@ -6,7 +6,7 @@
 
 (function(factory) {
 		require('plugins/jquery.plugin');
-		factory(require('jquery')); // jshint ignore:line
+		factory(require('jquery'));
 	}(function($) {
 
 	var pluginName = 'datepick';
@@ -77,6 +77,7 @@
 			defaultClass: '',
 			selectedClass: 'datepick-selected',
 			highlightedClass: 'datepick-highlight',
+			highlightedSetClass: 'datepick-highlight-set',
 			todayClass: 'datepick-today',
 			otherMonthClass: 'datepick-other-month',
 			weekendClass: 'datepick-weekend',
@@ -1754,6 +1755,22 @@
 			}
 		},
 
+		/** Set the Highlighted dates for a datepicker.
+			@example $(selector).datepick('setHighlightedDates', {startDate: new Date(2016, 04, 1), endDate: startDate: new Date(2016, 05, 25)}) */
+		setHighlightedDates: function(elem, dates) {
+			var inst = this._getInst(elem);
+			if (!$.isEmptyObject(inst) && dates) {
+				var curDate = inst.selectedDates[0];
+				inst.highlightedSetDates = {};
+				var startDate = plugin.determineDate(
+					dates.startDate, null, curDate, inst.options.dateFormat, inst.getConfig());
+				var endDate = plugin.determineDate(
+					dates.endDate, null, curDate, inst.options.dateFormat, inst.getConfig());
+				inst.highlightedSetDates.startDate = startDate;
+				inst.highlightedSetDates.endDate = endDate;
+			}
+		},
+
 		/** Determine whether a date is selectable for this datepicker.
 			@private
 			@param elem {Element} The control to check.
@@ -2079,6 +2096,7 @@
 				var days = '';
 				for (var day = 0; day < 7; day++) {
 					var selected = false;
+					var highlightedSet = false;
 					if (inst.options.rangeSelect && inst.selectedDates.length > 0) {
 						selected = (drawDate.getTime() >= inst.selectedDates[0] &&
 							drawDate.getTime() <= inst.selectedDates[1]);
@@ -2088,6 +2106,13 @@
 							if (inst.selectedDates[i].getTime() === drawDate.getTime()) {
 								selected = true;
 								break;
+							}
+						}
+						console.log('inst.highlightedSetDates ' , inst.highlightedSetDates);
+						if (inst.highlightedSetDates) {
+							if (drawDate.getTime() >= inst.highlightedSetDates.startDate.getTime() &&
+								drawDate.getTime() <= inst.highlightedSetDates.endDate.getTime()) {
+								highlightedSet = true;
 							}
 						}
 					}
@@ -2100,6 +2125,8 @@
 						' class="dp' + ts + ' ' + (dateInfo.dateClass || '') +
 						(selected && (selectOtherMonths || drawDate.getMonth() + 1 === month) ?
 						' ' + renderer.selectedClass : '') +
+						(highlightedSet && (drawDate.getMonth() + 1 === month) ?
+						' ' + renderer.highlightedSetClass : '') +
 						(selectable ? ' ' + renderer.defaultClass : '') +
 						((drawDate.getDay() || 7) < 6 ? '' : ' ' + renderer.weekendClass) +
 						(drawDate.getMonth() + 1 === month ? '' : ' ' + renderer.otherMonthClass) +
