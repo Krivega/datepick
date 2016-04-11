@@ -1,0 +1,14 @@
+{
+  "author": "Keith Wood (kbwood{at}iinet.com.au)",
+  "name": "jquery.datepick",
+  "description": "Date picker for jQuery",
+  "version": "5.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Krivega/datepick.git"
+  },
+  "main": "jquery.datepick.js",
+  "dependencies": {
+    "jquery": ">=1.7"
+  }
+}
